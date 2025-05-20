@@ -16,16 +16,10 @@ import net.zithium.deluxecoinflip.config.Messages;
 import net.zithium.deluxecoinflip.economy.EconomyManager;
 import net.zithium.deluxecoinflip.game.CoinflipGame;
 import net.zithium.deluxecoinflip.game.GameAnimationRunner;
-import net.zithium.deluxecoinflip.storage.PlayerData;
-import net.zithium.deluxecoinflip.storage.StorageManager;
 import net.zithium.deluxecoinflip.utility.ItemStackBuilder;
 import net.zithium.deluxecoinflip.utility.TextUtil;
 import net.zithium.library.utils.ColorUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -38,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class CoinflipGUI implements Listener {
 
@@ -154,9 +147,8 @@ public class CoinflipGUI implements Listener {
 
 
                     // Update player stats
-                    StorageManager storageManager = plugin.getStorageManager();
-                    updatePlayerStats(storageManager, winner, finalWinAmount, beforeTax, true);
-                    updatePlayerStats(storageManager, loser, 0, beforeTax, false);
+                    updatePlayerStats(winner, finalWinAmount, beforeTax, true);
+                    updatePlayerStats(loser, 0, beforeTax, false);
 
                     // Send messages
                     String winAmountFormatted = TextUtil.numberFormat(finalWinAmount);
@@ -208,25 +200,11 @@ public class CoinflipGUI implements Listener {
         scheduler.runTaskAtLocation(regionLoc, task[0]);
     }
 
-    private void updatePlayerStats(StorageManager storageManager, OfflinePlayer player, long winAmount, long beforeTax, boolean isWinner) {
-        Optional<PlayerData> playerDataOptional = storageManager.getPlayer(player.getUniqueId());
-        if (playerDataOptional.isPresent()) {
-            PlayerData playerData = playerDataOptional.get();
-            if (isWinner) {
-                playerData.updateWins();
-                playerData.updateProfit(winAmount);
-                playerData.updateGambled(beforeTax);
-            } else {
-                playerData.updateLosses();
-                playerData.updateLosses(beforeTax);
-                playerData.updateGambled(beforeTax);
-            }
+    private void updatePlayerStats(OfflinePlayer player, long winAmount, long beforeTax, boolean isWinner) {
+        if (isWinner) {
+            plugin.getGameManager().handleGameWin(player.getUniqueId(), winAmount, beforeTax);
         } else {
-            if (isWinner) {
-                storageManager.updateOfflinePlayerWin(player.getUniqueId(), winAmount, beforeTax);
-            } else {
-                storageManager.updateOfflinePlayerLoss(player.getUniqueId(), beforeTax);
-            }
+            plugin.getGameManager().handleGameLoss(player.getUniqueId(), beforeTax, beforeTax);
         }
     }
 
@@ -234,7 +212,7 @@ public class CoinflipGUI implements Listener {
         if (winAmount >= minimumBroadcastWinnings) {
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 plugin.getStorageManager().getPlayer(player.getUniqueId()).ifPresent(playerData -> {
-                    if (playerData.isDisplayBroadcastMessages()) {
+                    if (playerData.shouldDisplayBroadcastMessages()) {
                         Messages.COINFLIP_BROADCAST.send(player, replacePlaceholders(
                                 String.valueOf(taxRate),
                                 TextUtil.numberFormat(tax),

@@ -5,6 +5,7 @@
 
 package net.zithium.deluxecoinflip.api;
 
+import net.zithium.deluxecoinflip.api.game.GameManager;
 import net.zithium.deluxecoinflip.economy.provider.EconomyProvider;
 import net.zithium.deluxecoinflip.storage.PlayerData;
 import org.bukkit.entity.Player;
@@ -29,4 +30,7 @@ public interface DeluxeCoinflipAPI {
      * @return Optional of player data, represents if they are loaded in cache
      */
     Optional<PlayerData> getPlayerData(Player player);
+
+
+    GameManager getGameManager();
 }

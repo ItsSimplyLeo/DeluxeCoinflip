@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -24,9 +25,8 @@ public class PlayerChatListener implements Listener {
 
     private final DeluxeCoinflipPlugin plugin;
 
-    public PlayerChatListener(DeluxeCoinflipPlugin plugin) {
+    public PlayerChatListener(@NotNull DeluxeCoinflipPlugin plugin) {
         this.plugin = plugin;
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

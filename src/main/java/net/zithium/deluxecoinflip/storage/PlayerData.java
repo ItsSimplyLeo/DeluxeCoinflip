@@ -5,126 +5,124 @@
 
 package net.zithium.deluxecoinflip.storage;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
+import net.zithium.deluxecoinflip.api.data.IPlayerData;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.UUID;
 
-public class PlayerData {
+public class PlayerData implements IPlayerData {
 
     private final UUID uuid;
     private int wins, losses;
-    private long profit, totalLosses, totalGambled;
+    private double moneyGained, moneyLost, totalGambled;
     private boolean displayBroadcastMessages;
 
-    public PlayerData(UUID uuid, int wins, int losses, long profit, long totalLosses, long totalGambled, boolean displayBroadcastMessages) {
+    public PlayerData(@NotNull UUID uuid, int wins, int losses, long moneyGained, long moneyLost, long moneyGambled, boolean displayBroadcastMessages) {
         this.uuid = uuid;
         this.losses = losses;
         this.wins = wins;
-        this.profit = profit;
-        this.totalLosses = totalLosses;
-        this.totalGambled = totalGambled;
+        this.moneyGained = moneyGained;
+        this.moneyLost = moneyLost;
+        this.totalGambled = moneyGambled;
         this.displayBroadcastMessages = displayBroadcastMessages;
     }
 
-    public PlayerData(UUID uuid, int wins, int losses, long profit, long totalLosses, long totalGambled) {
-        this(uuid, wins, losses, profit, totalLosses, totalGambled, true);
-    }
-
-    public PlayerData(UUID uuid) {
+    public PlayerData(@NotNull UUID uuid) {
         this(uuid, 0, 0, 0, 0, 0, true);
     }
 
+    @NotNull
     public UUID getUUID() {
         return uuid;
     }
 
-    public void setLosses(int losses) {
-        this.losses = losses;
-    }
-
-    public void setWins(int wins) {
-        this.wins = wins;
-    }
-
-    public void setProfit(long profit) {
-        this.profit = profit;
-    }
-
-    public int getTotalGames() {
-        return wins + losses;
-    }
-
-    public int getLosses() {
-        return losses;
-    }
-
+    @Override
     public int getWins() {
         return wins;
     }
 
-    public long getProfit() {
-        return profit;
+    @Override
+    public void setWins(int wins) {
+        this.wins = wins;
     }
 
-    public void setTotalLosses(long totalLosses) {
-        this.totalLosses = totalLosses;
+    @Override
+    public void addWin() {
+        this.wins++;
     }
 
-    public void setTotalGambled(long totalGambled) {
-        this.totalGambled = totalGambled;
+    @Override
+    public int getLosses() {
+        return losses;
     }
 
-    public String getProfitFormatted() {
-        return NumberFormat.getNumberInstance(Locale.US).format(profit);
+    @Override
+    public void setLosses(int losses) {
+        this.losses = losses;
     }
 
-    public long getTotalLosses() {
-        return totalLosses;
+    @Override
+    public void addLoss() {
+        this.losses++;
     }
 
-    public String getTotalLossesFormatted() {
-        return NumberFormat.getNumberInstance(Locale.US).format(totalLosses);
+    @Override
+    public double getMoneyGained() {
+        return moneyGained;
     }
 
-    public long getTotalGambled() {
+    @Override
+    public void setMoneyGained(double moneyGained) {
+        this.moneyGained = moneyGained;
+    }
+
+    @Override
+    public void addMoneyGained(double moneyGained) {
+        this.moneyGained += moneyGained;
+    }
+
+    @Override
+    public double getMoneyLost() {
+        return moneyLost;
+    }
+
+    @Override
+    public void setMoneyLost(double moneyLost) {
+        this.moneyLost = moneyLost;
+    }
+
+    @Override
+    public void addMoneyLost(double moneyLost) {
+        this.moneyLost += moneyLost;
+    }
+
+    @Override
+    public double getMoneyGambled() {
         return totalGambled;
     }
 
-    public String getTotalGambledFormatted() {
-        return NumberFormat.getNumberInstance(Locale.US).format(totalGambled);
+    @Override
+    public void setMoneyGambled(double moneyGambled) {
+        this.totalGambled = moneyGambled;
     }
 
-    public void updateWins() {
-        wins++;
+    @Override
+    public void addMoneyGambled(double moneyGambled) {
+        this.totalGambled += moneyGambled;
     }
 
-    public void updateLosses() {
-        losses++;
+    @Override
+    public int getTotalGames() {
+        return getWins() + getLosses();
     }
 
-    public void updateProfit(long profit) {
-        this.profit += profit;
-    }
-
-    public void updateLosses(long losses) {
-        this.totalLosses += losses;
-    }
-
-    public void updateGambled(long gambled) {
-        this.totalGambled += gambled;
-    }
-
-    public double getWinPercentage() {
-        if (wins + losses == 0 || wins == 0) return 0.0;
-        return Double.parseDouble(new DecimalFormat("##.##").format((wins * 100L) / (wins + losses)));
-    }
-
-    public boolean isDisplayBroadcastMessages() {
+    @Override
+    public boolean shouldDisplayBroadcastMessages() {
         return displayBroadcastMessages;
     }
 
-    public void setDisplayBroadcastMessages(boolean value) {
-        this.displayBroadcastMessages = value;
+    @Override
+    public void shouldDisplayBroadcastMessages(boolean displayBroadcastMessages) {
+        this.displayBroadcastMessages = displayBroadcastMessages;
     }
 }
