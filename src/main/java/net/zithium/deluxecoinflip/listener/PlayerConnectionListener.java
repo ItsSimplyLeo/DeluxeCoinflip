@@ -1,7 +1,7 @@
 package net.zithium.deluxecoinflip.listener;
 
 import net.zithium.deluxecoinflip.DeluxeCoinflipPlugin;
-import net.zithium.deluxecoinflip.storage.StorageManager;
+import net.zithium.deluxecoinflip.api.data.StorageManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

@@ -19,7 +19,7 @@ import net.zithium.deluxecoinflip.api.events.CoinflipCreatedEvent;
 import net.zithium.deluxecoinflip.config.ConfigType;
 import net.zithium.deluxecoinflip.config.Messages;
 import net.zithium.deluxecoinflip.economy.EconomyManager;
-import net.zithium.deluxecoinflip.economy.provider.EconomyProvider;
+import net.zithium.deluxecoinflip.api.economy.EconomyProvider;
 import net.zithium.deluxecoinflip.game.CoinflipGame;
 import net.zithium.deluxecoinflip.storage.PlayerData;
 import net.zithium.deluxecoinflip.utility.TextUtil;

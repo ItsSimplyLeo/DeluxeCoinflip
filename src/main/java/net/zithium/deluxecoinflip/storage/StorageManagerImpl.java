@@ -6,6 +6,7 @@
 package net.zithium.deluxecoinflip.storage;
 
 import net.zithium.deluxecoinflip.DeluxeCoinflipPlugin;
+import net.zithium.deluxecoinflip.api.data.StorageManager;
 import net.zithium.deluxecoinflip.config.Messages;
 import net.zithium.deluxecoinflip.exception.InvalidStorageHandlerException;
 import net.zithium.deluxecoinflip.game.CoinflipGame;
@@ -19,17 +20,18 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-public class StorageManager {
+public class StorageManagerImpl implements StorageManager {
 
     private final DeluxeCoinflipPlugin plugin;
     private final Map<UUID, PlayerData> playerDataMap;
     private StorageHandler storageHandler;
 
-    public StorageManager(DeluxeCoinflipPlugin plugin) {
+    public StorageManagerImpl(DeluxeCoinflipPlugin plugin) {
         this.plugin = plugin;
         this.playerDataMap = new HashMap<>();
     }
 
+    @Override
     public void onEnable() {
         if (plugin.getConfig().getString("storage.type", "SQLITE").equalsIgnoreCase("SQLITE")) {
             storageHandler = new SQLiteHandler();
@@ -45,6 +47,7 @@ public class StorageManager {
         Bukkit.getOnlinePlayers().forEach(player -> loadPlayerData(player.getUniqueId()));
     }
 
+    @Override
     public void onDisable(boolean shutdown) {
         plugin.getLogger().info("Saving player data to database...");
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -62,7 +65,7 @@ public class StorageManager {
         scheduler.shutdown();
     }
 
-    public Optional<PlayerData> getPlayer(UUID uuid) {
+    public Optional<PlayerData> getPlayer(@NotNull UUID uuid) {
         return Optional.ofNullable(playerDataMap.get(uuid));
     }
 
@@ -85,7 +88,12 @@ public class StorageManager {
         });
     }
 
-    public void savePlayerData(PlayerData player, boolean removeCache) {
+    @Override
+    public Map<UUID, PlayerData> getPlayerCache() {
+        return playerDataMap;
+    }
+
+    public void savePlayerData(@NotNull PlayerData player, boolean removeCache) {
         UUID uuid = player.getUUID();
         DeluxeCoinflipPlugin.getInstance().getScheduler().runTaskAsynchronously(() -> {
             storageHandler.savePlayer(player);
@@ -93,7 +101,7 @@ public class StorageManager {
         });
     }
 
-    public StorageHandler getStorageHandler() {
+    public @NotNull StorageHandler getStorageHandler() {
         return storageHandler;
     }
 }

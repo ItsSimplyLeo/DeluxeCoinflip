@@ -10,13 +10,14 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import me.nahu.scheduler.wrapper.FoliaWrappedJavaPlugin;
 import net.zithium.deluxecoinflip.api.DeluxeCoinflipAPI;
+import net.zithium.deluxecoinflip.api.data.StorageManager;
 import net.zithium.deluxecoinflip.api.game.GameManager;
 import net.zithium.deluxecoinflip.command.CoinflipCommand;
 import net.zithium.deluxecoinflip.config.ConfigHandler;
 import net.zithium.deluxecoinflip.config.ConfigType;
 import net.zithium.deluxecoinflip.config.Messages;
 import net.zithium.deluxecoinflip.economy.EconomyManager;
-import net.zithium.deluxecoinflip.economy.provider.EconomyProvider;
+import net.zithium.deluxecoinflip.api.economy.EconomyProvider;
 import net.zithium.deluxecoinflip.game.CoinflipGame;
 import net.zithium.deluxecoinflip.game.GameManagerImpl;
 import net.zithium.deluxecoinflip.hook.DiscordHook;
@@ -25,7 +26,7 @@ import net.zithium.deluxecoinflip.listener.PlayerChatListener;
 import net.zithium.deluxecoinflip.listener.PlayerConnectionListener;
 import net.zithium.deluxecoinflip.menu.InventoryManager;
 import net.zithium.deluxecoinflip.storage.PlayerData;
-import net.zithium.deluxecoinflip.storage.StorageManager;
+import net.zithium.deluxecoinflip.storage.StorageManagerImpl;
 import org.bstats.bukkit.Metrics;
 import net.zithium.deluxecoinflip.menu.DupeProtection;
 import org.bukkit.Bukkit;
@@ -33,6 +34,7 @@ import org.bukkit.entity.Player;
 import net.zithium.deluxecoinflip.utility.ItemStackBuilder;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +79,7 @@ public class DeluxeCoinflipPlugin extends FoliaWrappedJavaPlugin implements Delu
         Messages.setConfiguration(configMap.get(ConfigType.MESSAGES).getConfig());
 
         // Load storage
-        storageManager = new StorageManager(this);
+        storageManager = new StorageManagerImpl(this);
         try {
             storageManager.onEnable();
         } catch (Exception ex) {
@@ -193,12 +195,12 @@ public class DeluxeCoinflipPlugin extends FoliaWrappedJavaPlugin implements Delu
 
     // API methods
     @Override
-    public void registerEconomyProvider(EconomyProvider provider, String requiredPlugin) {
+    public void registerEconomyProvider(@NotNull EconomyProvider provider, @NotNull String requiredPlugin) {
         economyManager.registerEconomyProvider(provider, requiredPlugin);
     }
 
     @Override
-    public Optional<PlayerData> getPlayerData(Player player) {
+    public Optional<PlayerData> getPlayerData(@NotNull Player player) {
         return storageManager.getPlayer(player.getUniqueId());
     }
 

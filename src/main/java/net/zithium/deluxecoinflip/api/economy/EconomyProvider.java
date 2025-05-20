@@ -3,7 +3,7 @@
  * Copyright (c) 2021 - 2025 Zithium Studios. All rights reserved.
  */
 
-package net.zithium.deluxecoinflip.economy.provider;
+package net.zithium.deluxecoinflip.api.economy;
 
 import org.bukkit.OfflinePlayer;
 

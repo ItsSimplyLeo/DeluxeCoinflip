@@ -3,9 +3,9 @@
  * Copyright (c) 2021 - 2025 Zithium Studios. All rights reserved.
  */
 
-package net.zithium.deluxecoinflip.economy.provider.impl;
+package net.zithium.deluxecoinflip.economy.providers;
 
-import net.zithium.deluxecoinflip.economy.provider.EconomyProvider;
+import net.zithium.deluxecoinflip.api.economy.EconomyProvider;
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.black_ixx.playerpoints.PlayerPointsAPI;
 import org.bukkit.OfflinePlayer;

@@ -7,8 +7,8 @@ package net.zithium.deluxecoinflip.economy;
 
 import net.zithium.deluxecoinflip.DeluxeCoinflipPlugin;
 import net.zithium.deluxecoinflip.config.ConfigType;
-import net.zithium.deluxecoinflip.economy.provider.EconomyProvider;
-import net.zithium.deluxecoinflip.economy.provider.impl.*;
+import net.zithium.deluxecoinflip.api.economy.EconomyProvider;
+import net.zithium.deluxecoinflip.economy.providers.*;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 

@@ -3,11 +3,11 @@
  * Copyright (c) 2021 - 2025 Zithium Studios. All rights reserved.
  */
 
-package net.zithium.deluxecoinflip.economy.provider.impl;
+package net.zithium.deluxecoinflip.economy.providers;
 
 import me.mraxetv.beasttokens.api.BeastTokensAPI;
 import me.mraxetv.beasttokens.api.handlers.BTTokensManager;
-import net.zithium.deluxecoinflip.economy.provider.EconomyProvider;
+import net.zithium.deluxecoinflip.api.economy.EconomyProvider;
 import org.bukkit.OfflinePlayer;
 
 public class BeastTokensProvider extends EconomyProvider {

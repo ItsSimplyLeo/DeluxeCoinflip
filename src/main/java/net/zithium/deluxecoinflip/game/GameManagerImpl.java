@@ -6,9 +6,9 @@
 package net.zithium.deluxecoinflip.game;
 
 import net.zithium.deluxecoinflip.DeluxeCoinflipPlugin;
+import net.zithium.deluxecoinflip.api.data.StorageManager;
 import net.zithium.deluxecoinflip.api.game.GameManager;
 import net.zithium.deluxecoinflip.storage.PlayerData;
-import net.zithium.deluxecoinflip.storage.StorageManager;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
