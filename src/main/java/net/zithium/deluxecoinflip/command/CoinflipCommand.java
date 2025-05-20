@@ -14,13 +14,13 @@ import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Optional;
 import co.aikar.commands.annotation.Subcommand;
 import net.zithium.deluxecoinflip.DeluxeCoinflipPlugin;
+import net.zithium.deluxecoinflip.api.game.GameManager;
 import net.zithium.deluxecoinflip.api.events.CoinflipCreatedEvent;
 import net.zithium.deluxecoinflip.config.ConfigType;
 import net.zithium.deluxecoinflip.config.Messages;
 import net.zithium.deluxecoinflip.economy.EconomyManager;
 import net.zithium.deluxecoinflip.economy.provider.EconomyProvider;
 import net.zithium.deluxecoinflip.game.CoinflipGame;
-import net.zithium.deluxecoinflip.game.GameManager;
 import net.zithium.deluxecoinflip.storage.PlayerData;
 import net.zithium.deluxecoinflip.utility.TextUtil;
 import net.zithium.library.utils.ColorUtil;
@@ -104,31 +104,25 @@ public class CoinflipCommand extends BaseCommand {
         }
 
         PlayerData playerData = playerDataOptional.get();
-        if (playerData.isDisplayBroadcastMessages()) {
+        if (playerData.shouldDisplayBroadcastMessages()) {
             Messages.BROADCASTS_TOGGLED_OFF.send(player);
-            playerData.setDisplayBroadcastMessages(false);
+            playerData.shouldDisplayBroadcastMessages(false);
         } else {
             Messages.BROADCASTS_TOGGLED_ON.send(player);
-            playerData.setDisplayBroadcastMessages(true);
+            playerData.shouldDisplayBroadcastMessages(true);
         }
     }
 
     @Subcommand("delete|remove")
     public void deleteSubCommand(final CommandSender sender) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage("Only players can remove a coinflip game");
             return;
         }
 
-        Player player = (Player) sender;
         UUID uuid = player.getUniqueId();
-        if (gameManager.getCoinflipGames().containsKey(uuid)) {
-            final CoinflipGame game = gameManager.getCoinflipGames().get(uuid);
-
-            economyManager.getEconomyProvider(game.getProvider()).deposit(player, game.getAmount());
-            gameManager.removeCoinflipGame(uuid);
+        if (gameManager.handleGameCancel(uuid)) {
             Messages.DELETED_GAME.send(player);
-
         } else {
             Messages.GAME_NOT_FOUND.send(player);
         }
@@ -206,7 +200,7 @@ public class CoinflipCommand extends BaseCommand {
 
                     if (playerDataOptional.isPresent()) {
                         PlayerData playerData = playerDataOptional.get();
-                        if (playerData.isDisplayBroadcastMessages()) {
+                        if (playerData.shouldDisplayBroadcastMessages()) {
                             Messages.COINFLIP_CREATED_BROADCAST.send(onlinePlayer, "{PLAYER}", player.getName(), "{CURRENCY}", provider.getDisplayName(), "{AMOUNT}", TextUtil.numberFormat(amount));
                         }
                     }

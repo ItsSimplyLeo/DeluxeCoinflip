@@ -30,8 +30,6 @@ public class SQLiteHandler implements StorageHandler {
     private File file;
     private Connection connection;
 
-    private final String TABLE_NAME = "players";
-
     @Override
     public boolean onEnable(final DeluxeCoinflipPlugin plugin) {
         this.plugin = plugin;
@@ -73,6 +71,7 @@ public class SQLiteHandler implements StorageHandler {
     private synchronized void createTable() {
         try (Connection tableConnection = getConnection();
              Statement statement = tableConnection.createStatement()) {
+            String TABLE_NAME = "players";
             String createPlayersTable = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
                     "uuid VARCHAR(255) NOT NULL PRIMARY KEY, " +
                     "wins INTEGER, " +
@@ -104,10 +103,10 @@ public class SQLiteHandler implements StorageHandler {
                     PlayerData playerData = new PlayerData(uuid);
                     playerData.setWins(resultSet.getInt("wins"));
                     playerData.setLosses(resultSet.getInt("losses"));
-                    playerData.setProfit(resultSet.getLong("profit"));
-                    playerData.setTotalLosses(resultSet.getLong("total_loss"));
-                    playerData.setTotalGambled(resultSet.getLong("total_gambled"));
-                    playerData.setDisplayBroadcastMessages(resultSet.getBoolean("broadcasts"));
+                    playerData.setMoneyGained(resultSet.getDouble("profit"));
+                    playerData.setMoneyLost(resultSet.getDouble("total_loss"));
+                    playerData.setMoneyGambled(resultSet.getDouble("total_gambled"));
+                    playerData.shouldDisplayBroadcastMessages(resultSet.getBoolean("broadcasts"));
 
                     return playerData;
                 }
@@ -126,10 +125,10 @@ public class SQLiteHandler implements StorageHandler {
             preparedStatement.setString(1, player.getUUID().toString());
             preparedStatement.setInt(2, player.getWins());
             preparedStatement.setInt(3, player.getLosses());
-            preparedStatement.setLong(4, player.getProfit());
-            preparedStatement.setLong(5, player.getTotalLosses());
-            preparedStatement.setLong(6, player.getTotalGambled());
-            preparedStatement.setBoolean(7, player.isDisplayBroadcastMessages());
+            preparedStatement.setDouble(4, player.getMoneyGained());
+            preparedStatement.setDouble(5, player.getMoneyLost());
+            preparedStatement.setDouble(6, player.getMoneyGambled());
+            preparedStatement.setBoolean(7, player.shouldDisplayBroadcastMessages());
             preparedStatement.execute();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "Error occurred while attempting to save a player's data.", e);

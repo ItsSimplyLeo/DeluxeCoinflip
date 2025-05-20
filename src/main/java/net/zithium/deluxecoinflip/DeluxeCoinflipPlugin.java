@@ -10,6 +10,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import me.nahu.scheduler.wrapper.FoliaWrappedJavaPlugin;
 import net.zithium.deluxecoinflip.api.DeluxeCoinflipAPI;
+import net.zithium.deluxecoinflip.api.game.GameManager;
 import net.zithium.deluxecoinflip.command.CoinflipCommand;
 import net.zithium.deluxecoinflip.config.ConfigHandler;
 import net.zithium.deluxecoinflip.config.ConfigType;
@@ -17,10 +18,11 @@ import net.zithium.deluxecoinflip.config.Messages;
 import net.zithium.deluxecoinflip.economy.EconomyManager;
 import net.zithium.deluxecoinflip.economy.provider.EconomyProvider;
 import net.zithium.deluxecoinflip.game.CoinflipGame;
-import net.zithium.deluxecoinflip.game.GameManager;
+import net.zithium.deluxecoinflip.game.GameManagerImpl;
 import net.zithium.deluxecoinflip.hook.DiscordHook;
 import net.zithium.deluxecoinflip.hook.PlaceholderAPIHook;
 import net.zithium.deluxecoinflip.listener.PlayerChatListener;
+import net.zithium.deluxecoinflip.listener.PlayerConnectionListener;
 import net.zithium.deluxecoinflip.menu.InventoryManager;
 import net.zithium.deluxecoinflip.storage.PlayerData;
 import net.zithium.deluxecoinflip.storage.StorageManager;
@@ -30,6 +32,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import net.zithium.deluxecoinflip.utility.ItemStackBuilder;
 import org.bukkit.NamespacedKey;
+import org.bukkit.event.Listener;
 
 import java.util.HashMap;
 import java.util.List;
@@ -88,7 +91,7 @@ public class DeluxeCoinflipPlugin extends FoliaWrappedJavaPlugin implements Delu
         economyManager = new EconomyManager(this);
         economyManager.onEnable();
 
-        gameManager = new GameManager(this);
+        gameManager = new GameManagerImpl(this);
 
         inventoryManager = new InventoryManager();
         inventoryManager.load(this);
@@ -106,7 +109,10 @@ public class DeluxeCoinflipPlugin extends FoliaWrappedJavaPlugin implements Delu
         }));
 
         // Register listeners
-        new PlayerChatListener(this);
+        this.registerEvents(
+                new PlayerChatListener(this),
+                new PlayerConnectionListener(this)
+        );
 
         // PlaceholderAPI Hook
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
@@ -179,6 +185,10 @@ public class DeluxeCoinflipPlugin extends FoliaWrappedJavaPlugin implements Delu
 
     public NamespacedKey getKey(String key) {
         return new NamespacedKey(this, key);
+    }
+
+    private void registerEvents(Listener... listeners) {
+        for (Listener listener : listeners) getServer().getPluginManager().registerEvents(listener, this);
     }
 
     // API methods

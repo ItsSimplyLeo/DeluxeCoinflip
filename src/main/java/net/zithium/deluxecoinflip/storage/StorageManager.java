@@ -18,6 +18,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ public class StorageManager {
     }
 
     public void onEnable() {
-        if (plugin.getConfig().getString("storage.type").equalsIgnoreCase("SQLITE")) {
+        if (plugin.getConfig().getString("storage.type", "SQLITE").equalsIgnoreCase("SQLITE")) {
             storageHandler = new SQLiteHandler();
         } else {
             throw new InvalidStorageHandlerException("Invalid storage handler specified");
@@ -50,20 +51,6 @@ public class StorageManager {
             plugin.getServer().getPluginManager().disablePlugin(plugin);
             return;
         }
-
-        Stream.of(
-                new Listener() {
-                    @EventHandler(priority = EventPriority.MONITOR)
-                    public void onPlayerJoin(final PlayerJoinEvent event) {
-                        loadPlayerData(event.getPlayer().getUniqueId());
-                    }
-
-                }, new Listener() {
-                    @EventHandler(priority = EventPriority.MONITOR)
-                    public void onPlayerQuit(final PlayerQuitEvent event) {
-                        getPlayer(event.getPlayer().getUniqueId()).ifPresent(data -> savePlayerData(data, true));
-                    }
-                }).forEach(listener -> plugin.getServer().getPluginManager().registerEvents(listener, plugin));
 
         Bukkit.getOnlinePlayers().forEach(player -> loadPlayerData(player.getUniqueId()));
     }
@@ -89,27 +76,11 @@ public class StorageManager {
         return Optional.ofNullable(playerDataMap.get(uuid));
     }
 
-    public void updateOfflinePlayerWin(UUID uuid, long profit, long beforeTax) {
-        PlayerData playerData = storageHandler.getPlayer(uuid);
-        playerData.updateWins();
-        playerData.updateProfit(profit);
-        playerData.updateGambled(beforeTax);
-        savePlayerData(playerData, false);
-    }
-
-    public void updateOfflinePlayerLoss(UUID uuid, long beforeTax) {
-        PlayerData playerData = storageHandler.getPlayer(uuid);
-        playerData.updateLosses();
-        playerData.updateLosses(beforeTax);
-        playerData.updateGambled(beforeTax);
-        savePlayerData(playerData, false);
-    }
-
-    public void loadPlayerData(UUID uuid) {
-        DeluxeCoinflipPlugin.getInstance().getScheduler().runTaskAsynchronously(() -> playerDataMap.put(uuid, storageHandler.getPlayer(uuid)));
+    public void loadPlayerData(@NotNull UUID uuid) {
         DeluxeCoinflipPlugin.getInstance().getScheduler().runTaskAsynchronously(() -> {
             playerDataMap.put(uuid, storageHandler.getPlayer(uuid));
 
+            // Load any previous unclosed games and refund and delete
             CoinflipGame game = storageHandler.getCoinflipGame(uuid);
             if (game != null) {
                 plugin.getScheduler().runTask(() -> {

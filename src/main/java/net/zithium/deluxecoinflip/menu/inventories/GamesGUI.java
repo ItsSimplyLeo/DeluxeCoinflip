@@ -6,17 +6,18 @@
 package net.zithium.deluxecoinflip.menu.inventories;
 
 import dev.triumphteam.gui.guis.Gui;
+import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import net.kyori.adventure.text.Component;
 import net.zithium.deluxecoinflip.DeluxeCoinflipPlugin;
+import net.zithium.deluxecoinflip.api.game.GameManager;
 import net.zithium.deluxecoinflip.config.ConfigType;
 import net.zithium.deluxecoinflip.config.Messages;
 import net.zithium.deluxecoinflip.economy.EconomyManager;
 import net.zithium.deluxecoinflip.game.CoinflipGame;
-import net.zithium.deluxecoinflip.game.GameManager;
 import net.zithium.deluxecoinflip.storage.PlayerData;
+import net.zithium.deluxecoinflip.utility.FormatUtil;
 import net.zithium.deluxecoinflip.utility.ItemStackBuilder;
-import dev.triumphteam.gui.guis.GuiItem;
 import net.zithium.library.utils.ColorUtil;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -28,12 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.text.NumberFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 public class GamesGUI {
@@ -108,10 +104,10 @@ public class GamesGUI {
                 newItemBuilder.withLore(meta.getLore().stream().map(line -> line
                                 .replace("{WINS}", String.valueOf(playerData.getWins()))
                                 .replace("{LOSSES}", String.valueOf(playerData.getLosses()))
-                                .replace("{PROFIT}", String.valueOf(playerData.getProfitFormatted()))
+                                .replace("{PROFIT}", FormatUtil.formatNumber(playerData.getMoneyGained()))
                                 .replace("{WIN_PERCENTAGE}", String.valueOf(playerData.getWinPercentage()))
-                                .replace("{TOTAL_LOSSES}", String.valueOf(playerData.getTotalLossesFormatted()))
-                                .replace("{TOTAL_GAMBLED}", String.valueOf(playerData.getTotalGambledFormatted()))
+                                .replace("{TOTAL_LOSSES}", FormatUtil.formatNumber(playerData.getLosses()))
+                                .replace("{TOTAL_GAMBLED}", FormatUtil.formatNumber(playerData.getMoneyGambled()))
                                 .replace("{PLAYER}", player.getName()))
                         .toList());
             }
